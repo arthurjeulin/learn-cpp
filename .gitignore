@@ -45,3 +45,4 @@ log/
 *.exe
 *.out
 *.app
+*.DS_Store
