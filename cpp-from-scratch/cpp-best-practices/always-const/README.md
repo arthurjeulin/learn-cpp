@@ -77,3 +77,5 @@ static void baseBench(benchmark::State &s)
 ```
 
 **NRVO: Named Return Value Optimization is a C++ compiler optimization that eliminates unnecessary copy/move operations by constructing a name, local object directly in the caller's stack frame.**
+- mechanism: Instead of creating a local object and copying it to the return value, the compiler allocates spaces for the result in the calling function and passes that address to the function being called.
+- copy elision: While similar to unnamed RVO (which is mandatory in C++17).
