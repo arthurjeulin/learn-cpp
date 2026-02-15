@@ -111,18 +111,16 @@ Inconvéninants:
  */
 struct Multiply{
   int k {};
-  int operator()(int x) { return k * x;}
+  int operator()(int x) const { return k * x;}
 };
 
-template <typename T>
-std::vector<T> filter(const std::vector<T> v, std::function<T(T)> f)
+template <typename T, typename Pred>
+std::vector<T> filter(const std::vector<T>& v, Pred pred)
 {
-  std::vector<T> new_vector(v.size());
-  for(std::size_t i={};i < v.size(); i++)
-  {
-    new_vector[i] = f(v[i]); 
-  }
-  return new_vector;
+  std::vector<T> out;
+  out.reserve(v.size());
+  std::copy_if(v.begin(),v.end(), std::back_inserter(out), pred);
+  return out;
 }
 
 int main()
@@ -178,10 +176,11 @@ int main()
       std::cout << element << " ";
     }
     std::cout << std::endl;
-    auto my_lambda = [t](int x){ return t * x;};
-    std::vector<int> result = filter<int>(my_vec, my_lambda);
 
-    for(const auto& element: result)
+    auto is_even = [](int x){ return (x % 2) == 0; };
+    auto evens = filter(my_vec, is_even);
+
+    for(const auto& element: evens)
     {
       std::cout << element << " ";
     }
