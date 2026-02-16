@@ -1,7 +1,7 @@
 ### File I/O
 standard library header `<fstream>`, this header is part of the **Input/Output** library.
 
-**ofstream: output file stream.**
+**ofstream: output file stream.**  
 **ifstream: input file stream.**
 #### Write Data`std::basic_ofstream`
 The class template `basic_ofstream`implemnts high-level output operations on file based.  
@@ -10,7 +10,7 @@ It interfaces a filbased streamdbuffer (`std::basic_filebuf`) with the high-leve
 #include <fstream>
 #include <string>
 /**
- * basic_ofstream: implemnts high-level file stream output operations
+ * basic_ofstream: implements high-level file stream output operations
  * ofstream std::basic_ofstream<char>
  */
  

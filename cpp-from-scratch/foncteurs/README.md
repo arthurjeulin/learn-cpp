@@ -2,6 +2,7 @@
 
 ## Définition: c'est quoi un foncteur ?
 **Un foncteur = un object appelable => un object pour lequel `operator()`est défini**
+On appelle généralement `operator()`function call operator.
 ```cpp
 struct Add{
   int operator()(int a, int b) const {return a + b;}

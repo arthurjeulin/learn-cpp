@@ -46,3 +46,4 @@ log/
 *.out
 *.app
 *.DS_Store
+test/
