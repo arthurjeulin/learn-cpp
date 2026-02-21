@@ -1,21 +1,19 @@
 #include <iostream>
-#include <functional>
-#include <numbers>
 
-struct Plancher{
-  int operator()(double d) const{
-    return static_cast<int>(d);
+struct X{
+  static int f(int n){
+    return n + 1;
   }
 };
 
-int plafond(double d){
-  return Plancher{}(d) + 1;
+int f(int n){
+  return n * 2;
 }
 
-int main()
-{
-  std::function<int(double)> fct = plafond;
-  std::cout << fct(std::numbers::pi) << std::endl;
-  fct = Plancher{};
-  std::cout << fct(std::numbers::pi) << std::endl;
+int main(){
+  auto fct = f; // f est int(*)(int)
+  std::cout << fct(3) << std::endl;; // retournera 6
+  fct = &X::f; // &X::f est un int (*)(int)
+  std::cout << fct(3) << std::endl; // retournera 4
+  return 0;
 }
