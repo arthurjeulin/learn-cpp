@@ -224,3 +224,39 @@ Additionally, the return types of most algorithms have been change to return all
 std::vector<int> v = {6,3,6,1,3,7};
 std::ranges:sort(v); // constrained algorithm
 ```
+
+## Introduction à `std::find_if`
+The `std::find_if` algorithm searches for the first elementi n a range that satisfies a specific condition (**predicat)**.  
+It returns an iterator to the first matching element, or an iterator to the end of the range it not match is found
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+int main() {
+	std::vector<int> numbers = {1, 3, 5, 7, 8, 9};
+	// Define the lambda predicate to check for even numbers
+	auto is_even = [](int n) { return n % 2 == 0; };
+
+	// Use std::find_if with the vector's begin and end iterators and the predicate
+	std::vector<int>::iterator it = std::find_if(numbers.begin(), numbers.end(), is_even);
+
+	// Check if a matching element was found
+	if (it != numbers.end()) {
+			std::cout << "The first even number found is: " << *it << std::endl;
+	} else {
+			std::cout << "No even numbers found in the range." << std::endl;
+	}
+
+	return 0;
+}
+```
+Output: **The first even number found is: 8**
+### Key Points
+- **parameters**: It takes three arguments:
+	- An iterator to the beginning of the range (`numbers.begin()` here)
+	- An iterator to the end of the range (`numbers.end()`here)
+	- A `unary predicate` (function, function object, or lambda) that takes one element from the range as an argument and returns a boolean value.
+- **return value**: It returns an iterator to the first element for which the predicate returns `true`. If no such element is found, it returns the end iterator.
+- **checking the result**: The returned iterator should always be compared to the end iterator to determine if a match was successfull before attempting to access the element.
+- **complexity**: It performs a linear search with at most N application of the predicate, where N is the distance between the start and end iterators.
