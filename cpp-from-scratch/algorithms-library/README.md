@@ -260,3 +260,8 @@ Output: **The first even number found is: 8**
 - **return value**: It returns an iterator to the first element for which the predicate returns `true`. If no such element is found, it returns the end iterator.
 - **checking the result**: The returned iterator should always be compared to the end iterator to determine if a match was successfull before attempting to access the element.
 - **complexity**: It performs a linear search with at most N application of the predicate, where N is the distance between the start and end iterators.
+
+
+
+### `std::ranges::count_if`
+`std::ranges::count_if` counts the elements in a range for which a given predicated (**a function that returns a boolean value) is true**)
