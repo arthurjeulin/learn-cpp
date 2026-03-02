@@ -1,77 +1,14 @@
 ## cpp kata
 
-### Jour 1: Exercice
-
-#### `find_if`- `first high-confidence detection`
-**Contexte** reçoit une framde de détection triée (ou pas) dans l'ordre d'arrivée.
-**But**: trouver la première détection dont le score >= threshold
-**À Implémenter**
-```cpp
-std::optional<Detection> first_detection_above(std::span<const Detection> dets, float threshold);
-```
-**Règle**
-- Retourne `std::nullopt` si aucune
-- Sinon retourne une copie de la première détection matchée
-- Utilise std::ranges::find_if(pas de boucle manuelle)
-
-### Jour 2: `copy_if`+ `count_if` (fenêtre temporeel / gating temps réel)
-**Objectif**
-- Simuler unf lux de points capteurs horodatés (`TimedPoint`)
-  1. **Gater**(filter) les points dans une fenêtre `[t0,t1]`
-  2. **Compter** ceux qui passent un second critère (ex: distance^2 < `r^2`) utile pour un "health check" rapide
-Algorithms ciblés:
-- `std::range::copy_if`
-- `std::ranges::count_if`
-#### Exercice 1 — Window gate (copy_if)
-```cpp
-[[nodiscard]] std::vector<TimedPoint>
-filter_time_window(std::span<const TimedPoint> pts,
-                   std::chrono::steady_clock::time_point t0,
-                   std::chrono::steady_clock::time_point t1);
-```
-
-Spéc
-- Garde les points tels que : t0 <= ts <= t1
-- Retourne un `vector<TimedPoint>` (copie des éléments).
-- Utilise `std::ranges::copy_if`.
-ë
-Pièges fréquents
-- Fenêtre invalide (t1 < t0) : décide une politique. Pour le kata : retourne vide.
-- Oublier `reserve(pts.size())`.
-- Captures de `t0/t1`.
-
-#### Exercice 2 — Count “close points” inside window (count_if)
-```cpp
-[[nodiscard]] std::size_t
-count_points_within_radius(std::span<const TimedPoint> pts,
-                           std::chrono::steady_clock::time_point t0,
-                           std::chrono::steady_clock::time_point t1,
-                           float radius_m);
-```
-Spéc
-- Compte les points qui vérifient :
-  - `t0 <= ts <= t1`
-  - `x*x + y*y <= radius_m*radius_m`
-- Utilise `std::ranges::count_if`.
-- Pas de copie de vector ici.
-
-Pièges
-- Évite `sqrt` (compare en norme²).
-- `radius_m négatif` : pour le kata, traite comme 0 (donc seuls points à l’origine passent).
-
-#### Bonus (optionnel 5 min) — Downsample “1 point every N”
-À implémenter
-```cpp
-[[nodiscard]] std::vector<TimedPoint>
-take_every_n(std::span<const TimedPoint> pts, std::size_t n);
-```
-Spéc
-- Si `n == 0` : retourne vide.
-- Sinon garde indices `0, n, 2n, ...`
-- Utilise ranges si tu veux (pas obligatoire), mais pas de boucle dans la fonction si possible.
-
-Astuce : tu peux faire une `views::iota `+ `views::stride` (C++23) n’existe pas en C++20, donc ici tu peux :
-
-- soit accepter une boucle (bonus only),
-- soit faire `views::transform` sur un vecteur d’indices (overkill).
-=> Pour le bonus, une boucle est acceptable si tu veux rester simple.
+| Day | Focus                             | Exercice 1                                                          | Exercice 2                                     | Bonus (C++20 “power tool”)                                                                                                           |
+| --: | --------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+|   1 | Search + map                      | `std::ranges::find_if` (première détection > threshold)             | `std::ranges::transform` (extraire ids)        | `std::clamp` + conversion compacte (score→u8)                                                                                        |
+|   2 | Filtering + metrics (time gating) | `std::ranges::copy_if` (fenêtre `[t0,t1]`)                          | `std::ranges::count_if` (fenêtre + distance²)  | **A**: `std::ranges::lower_bound/upper_bound/equal_range` pour fenêtre O(log n) (sur trié) / **B**: `std::erase_if` pruning in-place |
+|   3 | Sort + dedup + indexing           | `std::ranges::sort` (projection `&Detection::id`)                   | `std::ranges::unique` + `erase` (dedup par id) | `std::ranges::equal_range` (récupérer tous les éléments d’un id)                                                                     |
+|   4 | Partition + sélection (top-K)     | `std::ranges::partition` (valid/invalid)                            | `std::ranges::nth_element` (top-K scores)      | `std::ranges::partial_sort_copy` (top-K trié sans toucher l’input)                                                                   |
+|   5 | Reduce / stats                    | `std::accumulate` (somme/centroïde)                                 | `std::transform_reduce` (norm² / coût)         | `std::inclusive_scan` / `exclusive_scan` (cumul distance/temps)                                                                      |
+|   6 | Set algorithms (fusion capteurs)  | `std::ranges::set_intersection` (tracks match)                      | `std::ranges::set_difference` (cam_only)       | `std::ranges::merge` (fusion de flux triés)                                                                                          |
+|   7 | Ranges pipelines (C++20)          | `std::views::filter` + `std::views::transform` (pipeline logs/dets) | `std::ranges::copy` (matérialiser)             | `std::ranges::minmax_element` (bbox/limites robustes)                                                                                |
+|   8 | Parsing léger + types modernes    | `std::optional` + `std::ranges::transform` (parse tokens)           | `std::variant` (sorties typées)                | `std::visit` (traiter variant proprement)                                                                                            |
+|   9 | Recherche sur trié + “grouping”   | `std::ranges::lower_bound` (index par ts/id)                        | `std::ranges::equal_range` (groupe)            | `std::ranges::adjacent_difference` (dérivées v/acc à partir de poses)                                                                |
+|  10 | Patterns concurrency-safe         | split input en chunks (sans data race)                              | reduce des résultats locaux                    | `std::jthread` si dispo, sinon `std::thread` + RAII/discipline                                                                       |
